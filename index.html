@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS Print Client</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>UniversalPOS Print Client</h1>
+            <div id="status-container" class="status-offline">
+                <span id="status-indicator">●</span>
+                <span id="status-text">Desconectado</span>
+                <button onclick="verificarEstado()" class="refresh-btn">↻</button>
+            </div>
+        </header>
+
+        <section class="config-section">
+            <label for="printer-select">Seleccionar Impresora:</label>
+            <select id="printer-select">
+                <option value="">Cargando impresoras...</option>
+            </select>
+            <button onclick="listarImpresoras()" class="secondary-btn">Actualizar Lista</button>
+        </section>
+
+        <section class="actions-section">
+            <h2>Pruebas de Impresión</h2>
+            <div class="button-grid">
+                <button onclick="imprimir('restaurant')" class="print-btn restaurant">
+                    🍔 Comanda Restaurante
+                </button>
+                <button onclick="imprimir('notaVenta')" class="print-btn note">
+                    📝 Nota de Venta
+                </button>
+                <button onclick="imprimir('factura')" class="print-btn invoice">
+                    📄 Factura
+                </button>
+                <button onclick="imprimir('boleta')" class="print-btn receipt">
+                    🧾 Boleta
+                </button>
+            </div>
+        </section>
+
+        <section class="log-section">
+            <h3>Log de Eventos</h3>
+            <div id="log-output"></div>
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

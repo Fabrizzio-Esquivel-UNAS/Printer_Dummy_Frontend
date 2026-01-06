@@ -1,0 +1,169 @@
+:root {
+    --primary-color: #2563eb;
+    --success-color: #22c55e;
+    --error-color: #ef4444;
+    --bg-color: #f3f4f6;
+    --card-bg: #ffffff;
+    --text-color: #1f2937;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    margin: 0;
+    padding: 20px;
+    line-height: 1.5;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 1rem;
+}
+
+h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    color: var(--primary-color);
+}
+
+/* Status Indicator */
+#status-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.status-online {
+    background-color: #dcfce7;
+    color: #166534;
+}
+
+.status-offline {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+#status-indicator {
+    font-size: 1.2rem;
+}
+
+.refresh-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.1rem;
+    padding: 0 4px;
+    color: inherit;
+    transition: transform 0.3s;
+}
+
+.refresh-btn:hover {
+    transform: rotate(180deg);
+}
+
+/* Configuration Section */
+.config-section {
+    margin-bottom: 2rem;
+    background-color: #f8fafc;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+}
+
+select {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    margin-right: 10px;
+    min-width: 250px;
+    font-size: 1rem;
+}
+
+/* Actions Section */
+.button-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 6px;
+    padding: 12px 20px;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.secondary-btn {
+    background-color: #e2e8f0;
+    color: #475569;
+}
+
+.secondary-btn:hover {
+    background-color: #cbd5e1;
+}
+
+.print-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 1rem;
+    color: white;
+    height: 80px;
+}
+
+.print-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.restaurant { background-color: #f59e0b; }
+.note { background-color: #8b5cf6; }
+.invoice { background-color: #2563eb; }
+.receipt { background-color: #10b981; }
+
+/* Log Section */
+.log-section {
+    margin-top: 2rem;
+}
+
+#log-output {
+    background-color: #1e293b;
+    color: #e2e8f0;
+    padding: 1rem;
+    border-radius: 8px;
+    height: 150px;
+    overflow-y: auto;
+    font-family: 'Consolas', monospace;
+    font-size: 0.9rem;
+}
+
+.log-entry {
+    margin-bottom: 4px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 4px;
+}
+.log-success { color: #4ade80; }
+.log-error { color: #f87171; }
+.log-info { color: #60a5fa; }

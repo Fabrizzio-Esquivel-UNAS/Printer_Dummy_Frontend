@@ -1,0 +1,89 @@
+
+{
+  "action": "customizedPrint",
+  "printer": "",
+  "paperSize": "80mm",
+  "commands": [
+    {
+      "type": "text",
+      "value": "PRINCIPAL LEAD WORKING",
+      "align": "center",
+      "font": "bold"
+    },
+    {
+      "type": "block",
+      "value": "BOLETA DE VENTA",
+      "align": "center"
+    },
+    {
+      "type": "text",
+      "value": "SERIE: P01-00000746",
+      "align": "center",
+      "font": "bold"
+    },
+    {
+      "type": "separator",
+      "style": "dash"
+    },
+    {
+      "type": "text",
+      "value": "Fecha: 05/01/2026",
+      "align": "left"
+    },
+    {
+      "type": "text",
+      "value": "Cliente: JONATHAN DAMIAN PEREZ",
+      "align": "left"
+    },
+    {
+      "type": "text",
+      "value": "DNI: 75327620",
+      "align": "left"
+    },
+    {
+      "type": "separator",
+      "style": "dash"
+    },
+    {
+      "type": "row",
+      "cols": [
+        { "value": "CANT", "align": "left", "width": 0.2 },
+        { "value": "DESCRIPCION", "align": "left", "width": 0.5 },
+        { "value": "IMPORTE", "align": "right", "width": 0.3 }
+      ]
+    },
+    {
+      "type": "row",
+      "cols": [
+        { "value": "1", "align": "left", "width": 0.2 },
+        { "value": "PRODUCTO UNIDAD", "align": "left", "width": 0.5 },
+        { "value": "8.00", "align": "right", "width": 0.3 }
+      ]
+    },
+    {
+      "type": "separator",
+      "style": "solid"
+    },
+    {
+      "type": "row",
+      "cols": [
+        { "value": "TOTAL A PAGAR:", "align": "right", "width": 0.6 },
+        { "value": "S/ 8.00", "align": "right", "width": 0.4, "font": "bold" }
+      ]
+    },
+    {
+      "type": "text",
+      "value": "Cajero: RONALD LLERENA",
+      "align": "left",
+      "font": "small"
+    },
+    {
+      "type": "text",
+      "value": "Gracias por su preferencia",
+      "align": "center"
+    },
+    {
+      "type": "cut"
+    }
+  ]
+}

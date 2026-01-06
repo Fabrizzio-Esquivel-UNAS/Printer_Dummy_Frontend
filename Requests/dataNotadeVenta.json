@@ -1,0 +1,88 @@
+{
+  "action": "customizedPrint",
+  "printer": "",
+  "paperSize": "80mm",
+  "commands": [
+    {
+      "type": "text",
+      "value": "PRINCIPAL LEAD WORKING",
+      "align": "center",
+      "font": "bold"
+    },
+    {
+      "type": "text",
+      "value": "RUC: 20000000001",
+      "align": "center"
+    },
+    {
+      "type": "separator",
+      "style": "solid"
+    },
+    {
+      "type": "block",
+      "value": "NOTA DE VENTA",
+      "align": "center"
+    },
+    {
+      "type": "text",
+      "value": "NRO: P01-00000727",
+      "align": "center",
+      "font": "bold"
+    },
+    {
+      "type": "separator",
+      "style": "dash"
+    },
+    {
+      "type": "text",
+      "value": "Cliente: JONATHAN DAMIAN PEREZ",
+      "align": "left"
+    },
+    {
+      "type": "text",
+      "value": "DOC: 75327620",
+      "align": "left"
+    },
+    {
+      "type": "text",
+      "value": "Fecha: 22/12/2025",
+      "align": "left"
+    },
+    {
+      "type": "separator",
+      "style": "dash"
+    },
+    {
+      "type": "row",
+      "cols": [
+        { "value": "1", "align": "left", "width": 0.1 },
+        { "value": "conigv- bebida", "align": "left", "width": 0.6 },
+        { "value": "7.00", "align": "right", "width": 0.3 }
+      ]
+    },
+    {
+      "type": "separator",
+      "style": "solid"
+    },
+    {
+      "type": "row",
+      "cols": [
+        { "value": "TOTAL:", "align": "right", "width": 0.5 },
+        { "value": "S/ 7.00", "align": "right", "width": 0.5, "font": "bold" }
+      ]
+    },
+    {
+      "type": "text",
+      "value": "Forma de Pago: EFECTIVO",
+      "align": "left"
+    },
+    {
+      "type": "barcode",
+      "value": "P01-00000727",
+      "width": 200
+    },
+    {
+      "type": "cut"
+    }
+  ]
+}
