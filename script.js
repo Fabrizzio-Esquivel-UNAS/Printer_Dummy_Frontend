@@ -12,6 +12,39 @@ let API_URL = '';
 
 let currentPlatform = 'unknown'; // 'windows', 'android', 'ios'
 
+// --- INTERCEPCIÓN DE CONSOLA (LOGS) ---
+// Captura logs de consola (incluso los del Bridge) y los muestra en la UI
+(function() {
+    const originalLog = console.log;
+    const originalError = console.error;
+    const originalWarn = console.warn;
+
+    function formatArgs(args) {
+        return args.map(arg => {
+            if (typeof arg === 'object') {
+                try { return JSON.stringify(arg); } catch(e) { return String(arg); }
+            }
+            return String(arg);
+        }).join(' ');
+    }
+
+    console.log = function(...args) {
+        originalLog.apply(console, args);
+        // Evitamos recursión si log() llamara a console.log (actualmente no lo hace, pero por seguridad)
+        logToUI(formatArgs(args), 'info', true);
+    };
+
+    console.error = function(...args) {
+        originalError.apply(console, args);
+        logToUI(formatArgs(args), 'error', true);
+    };
+
+    console.warn = function(...args) {
+        originalWarn.apply(console, args);
+        logToUI(formatArgs(args), 'warning', true);
+    };
+})();
+
 // --- FUNCIONES DE ESTADO E INICIO ---
 
 function checkNativeBridge() {
@@ -21,9 +54,16 @@ function checkNativeBridge() {
         if (btnContainer) {
             btnContainer.style.display = 'block';
         }
-        log("Entorno móvil nativo detectado: Bridge disponible.", 'info');
+        // Usamos console.log para que aparezca en UI y DevTools
+        console.log("[Frontend] Entorno móvil nativo detectado: Bridge disponible.");
     }
 }
+
+// Escuchar evento de inyección asíncrona (Más robusto)
+window.addEventListener('NativeAgentReady', () => {
+    console.log("[Event] Evento 'NativeAgentReady' recibido.");
+    checkNativeBridge();
+});
 
 async function iniciarAgenteMovil() {
     if (!window.NativeAgent) {
@@ -390,11 +430,23 @@ function limpiarSelectImpresoras() {
 }
 
 function log(msg, type = 'info') {
+    // Wrapper compatible con código antiguo
+    logToUI(msg, type, false);
+}
+
+function logToUI(msg, type = 'info', fromConsole = false) {
     const logDiv = document.getElementById('log-output');
+    if (!logDiv) return;
+
+    // Si viene de consola, le damos un estilo visual ligeramente distinto si se desea,
+    // o simplemente lo procesamos. Aquí filtramos mensajes repetidos si es necesario.
+    
     const entry = document.createElement('div');
     entry.className = `log-entry log-${type}`;
+    if (fromConsole) entry.style.fontStyle = 'italic';
+    
     const time = new Date().toLocaleTimeString();
-    entry.textContent = `[${time}] ${msg}`;
+    entry.textContent = `[${time}] ${fromConsole ? '⚙ ' : ''}${msg}`;
     logDiv.prepend(entry);
 }
 
