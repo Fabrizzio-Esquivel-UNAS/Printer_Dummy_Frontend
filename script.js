@@ -1,5 +1,4 @@
 // --- REQUEST FILES MAPPING ---
-// Mapeo de identificadores de botones a archivos JSON en la carpeta Requests
 const REQUEST_FILES = {
     restaurant: 'Requests/dataOrderRestaurant.json',
     notaVenta: 'Requests/dataNotadeVenta.json',
@@ -8,139 +7,388 @@ const REQUEST_FILES = {
 };
 
 // --- CONFIGURACIÓN API ---
-const API_URL = 'http://localhost:5050/api/v1';
+// Se determina dinámicamente al conectar
+let API_URL = '';
 
-// --- FUNCIONES PRINCIPALES ---
+let currentPlatform = 'unknown'; // 'windows', 'android', 'ios'
+
+// --- FUNCIONES DE ESTADO E INICIO ---
+
+function checkNativeBridge() {
+    // Verificar si existe el objeto inyectado por el WebView
+    if (window.NativeAgent) {
+        const btnContainer = document.getElementById('mobile-start-container');
+        if (btnContainer) {
+            btnContainer.style.display = 'block';
+        }
+        log("Entorno móvil nativo detectado: Bridge disponible.", 'info');
+    }
+}
+
+async function iniciarAgenteMovil() {
+    if (!window.NativeAgent) {
+        alert("Error crítico: No se detectó el Bridge Nativo (window.NativeAgent).");
+        return;
+    }
+
+    log("📡 Solicitando inicio del Servidor Local en el dispositivo...", 'info');
+    
+    try {
+        // Llamada al Native Bridge (Dart/Flutter)
+        // Bloqueante hasta que el servidor local reporta éxito
+        const respuestaBridge = await window.NativeAgent.start();
+        
+        console.log("Respuesta Bridge:", respuestaBridge);
+
+        if (respuestaBridge.success) {
+            const mobileUrl = respuestaBridge.url; // Ej: http://localhost:5050
+            log(`✅ Agente Móvil iniciado correctamente en ${mobileUrl}`, 'success');
+            
+            // Actualizar el input y conectar
+            document.getElementById('server-url').value = mobileUrl;
+            conectarAgent();
+        } else {
+            log(`❌ Error iniciando agente móvil: ${respuestaBridge.error}`, 'error');
+            alert(`Error del Agente: ${respuestaBridge.error}`);
+        }
+
+    } catch (e) {
+        log(`❌ Excepción al comunicar con Bridge: ${e.message}`, 'error');
+        console.error(e);
+    }
+}
+
+async function conectarAgent() {
+    const urlInput = document.getElementById('server-url');
+    let baseUrl = urlInput.value.trim();
+    
+    // Validar formato básico
+    if (!baseUrl.startsWith('http')) {
+        baseUrl = 'http://' + baseUrl;
+        urlInput.value = baseUrl;
+    }
+    
+    // Remover slash final si existe
+    if (baseUrl.endsWith('/')) {
+        baseUrl = baseUrl.slice(0, -1);
+    }
+
+    API_URL = `${baseUrl}/api/v1`;
+    log(`Intentando conectar a ${API_URL}...`);
+    
+    await verificarEstado();
+}
 
 async function verificarEstado() {
+    if (!API_URL) return;
+
     const statusText = document.getElementById('status-text');
     const statusContainer = document.getElementById('status-container');
     const statusIndicator = document.getElementById('status-indicator');
 
-    statusText.innerText = "Verificando...";
+    statusText.innerText = "Conectando...";
     statusContainer.className = '';
 
     try {
         const response = await fetch(`${API_URL}/status`);
         if (response.ok) {
             const data = await response.json();
-            statusText.innerText = `Online (v${data.version})`;
+            
+            // Actualizar UI de estado
+            statusText.innerText = `Online (${data.platform})`;
             statusContainer.className = 'status-online';
             statusIndicator.innerText = '●';
-            log(`Agente conectado: ${data.agent}`, 'success');
+            
+            currentPlatform = data.platform ? data.platform.toLowerCase() : 'unknown';
+            log(`Agente conectado: Versión ${data.version} en ${data.host} (${currentPlatform})`, 'success');
+
+            // Actualizar UI según plataforma
+            actualizarUIPorPlataforma();
+            
+            // Cargar impresoras
             listarImpresoras();
         } else {
-            throw new Error("Respuesta no exitosa");
+            throw new Error("Respuesta de estado fallida");
         }
     } catch (e) {
         statusText.innerText = "Offline";
         statusContainer.className = 'status-offline';
         statusIndicator.innerText = '○';
+        currentPlatform = 'unknown';
         log("No se pudo conectar con el agente local.", 'error');
-        limpiarImpresoras();
+        
+        document.getElementById('printer-list-container').innerHTML = '<p style="text-align:center; color:#ef4444">Agente desconectado.</p>';
+        limpiarSelectImpresoras();
     }
 }
+
+function actualizarUIPorPlataforma() {
+    const isMobile = currentPlatform === 'android' || currentPlatform === 'ios';
+    const mobileElements = document.querySelectorAll('.mobile-only');
+    
+    mobileElements.forEach(el => {
+        el.style.display = isMobile ? 'block' : 'none'; 
+    });
+}
+
+// --- GESTIÓN DE IMPRESORAS ---
 
 async function listarImpresoras() {
+    const container = document.getElementById('printer-list-container');
     const select = document.getElementById('printer-select');
-    select.innerHTML = '<option value="">Cargando...</option>';
-
-    try {
-        const response = await fetch(`${API_URL}/list`);
-        const data = await response.json();
-        
-        select.innerHTML = '';
-        if (data.success && data.printers.length > 0) {
-            // Se agrega una opción vacía por defecto si se desea obligar a seleccionar,
-            // pero el requerimiento no lo especifica. Asumimos la primera como seleccionada.
-            data.printers.forEach(p => {
-                const option = document.createElement('option');
-                option.value = p.name;
-                
-                let label = p.name;
-                if (p.isDefault) label += ' (Predeterminado)';
-                if (p.isOffline) label += ' [OFFLINE]';
-                
-                option.text = label;
-                select.appendChild(option);
-            });
-            log(`Se encontraron ${data.printers.length} impresoras.`, 'info');
-        } else {
-            const option = document.createElement('option');
-            option.text = "No se encontraron impresoras";
-            option.value = "";
-            select.appendChild(option);
-        }
-    } catch (e) {
-        select.innerHTML = '<option value="">Error al cargar</option>';
-        log("Error al listar impresoras.", 'error');
-    }
-}
-
-async function imprimir(tipo) {
-    const printerName = document.getElementById('printer-select').value;
     
-    // 1. Obtener la ruta del archivo JSON correspondiente
-    const itemPath = REQUEST_FILES[tipo];
-    if (!itemPath) {
-        log(`Error: No existe mapeo para el tipo '${tipo}'`, 'error');
-        return;
-    }
-
-    log(`Cargando plantilla desde ${itemPath}...`, 'info');
-
-    let payload = null;
-
-    // 2. Cargar el JSON desde el archivo local
-    try {
-        const fileResponse = await fetch(itemPath);
-        if (!fileResponse.ok) {
-            throw new Error(`No se pudo cargar el archivo ${itemPath}`);
-        }
-        payload = await fileResponse.json();
-    } catch (e) {
-        log(`❌ Error cargando plantilla local: ${e.message}`, 'error');
-        return;
-    }
-
-    // 3. Asignar impresora si el usuario seleccionó una
-    if (printerName) {
-        payload.printer = printerName;
-    } else {
-        log("⚠️ No se seleccionó impresora. Se usará la configuración del JSON o predeterminada.", 'info');
-    }
-
-    // 4. Enviar a la API
-    log(`Enviando solicitud de impresión...`, 'info');
+    // Guardar selección actual si existe
+    const currentSelection = select.value;
 
     try {
-        const response = await fetch(`${API_URL}/print`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        });
+        const response = await fetch(`${API_URL}/printers`);
+        const data = await response.json();
 
-        let result;
-        try {
-            result = await response.json();
-        } catch (jsonError) {
-            // Si falla el parseo de JSON, asumimos error genérico del servidor
-            throw new Error(`Error del servidor (${response.status})`);
-        }
-
-        if (response.ok && result.success) {
-            log("✅ Impresión enviada correctamente", 'success');
+        if (data.success) {
+            // Renderizar Lista (Administración)
+            renderPrinterList(data.printers);
+            
+            // Renderizar Select (Pruebas)
+            renderPrinterSelect(data.printers, currentSelection);
         } else {
-            const msg = result.message || result.error || "Error desconocido";
-            log(`❌ Error de impresión (${response.status}): ${msg}`, 'error');
+            container.innerHTML = `<p>Error al obtener lista: ${data.message || 'Desconocido'}</p>`;
         }
     } catch (e) {
-        log(`❌ Error al imprimir: ${e.message}`, 'error');
-        console.error(e);
+        log("Error de red al listar impresoras", 'error');
+        container.innerHTML = `<p>Error de conexión.</p>`;
     }
 }
 
-// --- UTILIDADES ---
+function renderPrinterList(printers) {
+    const container = document.getElementById('printer-list-container');
+    container.innerHTML = '';
+
+    if (printers.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:#64748b;">No hay impresoras configuradas.</p>';
+        return;
+    }
+
+    const isMobile = currentPlatform === 'android' || currentPlatform === 'ios';
+
+    printers.forEach(p => {
+        const card = document.createElement('div');
+        card.className = 'printer-card';
+        
+        // Determinar badges
+        let badgesHtml = `<span class="badge badge-${p.type === 'NETWORK' ? 'network' : (p.type === 'BLUETOOTH' ? 'bt' : 'driver')}">${p.type}</span>`;
+        if (p.isDefault) badgesHtml += ` <span class="badge badge-default">DEFAULT</span>`;
+
+        // Acciones disponibles
+        let actionsHtml = `
+            <div class="actions-row">
+                ${!p.isDefault ? `<button onclick="setPredeterminada('${p.name}')" class="secondary-btn btn-sm" title="Marcar como predeterminada">★</button>` : ''}
+                <button onclick="verificarImpresora('${p.name}')" class="secondary-btn btn-sm" title="Verificar estado">❓ Info</button>
+        `;
+
+        if (isMobile) {
+            // Acciones exclusivas móvil
+            actionsHtml += `
+                <button onclick="eliminarImpresora('${p.name}')" class="danger-btn btn-sm" title="Eliminar">🗑</button>
+            `;
+        }
+        
+        actionsHtml += `</div>`;
+
+        card.innerHTML = `
+            <div class="printer-info">
+                <h3>${p.name}</h3>
+                <div class="printer-meta">
+                    ${badgesHtml}
+                    <span>${p.target || 'N/A'}</span>
+                    <span>${p.status || 'UNKNOWN'}</span>
+                </div>
+            </div>
+            ${actionsHtml}
+        `;
+        
+        container.appendChild(card);
+    });
+}
+
+function renderPrinterSelect(printers, currentVal) {
+    const select = document.getElementById('printer-select');
+    select.innerHTML = '<option value="">Seleccione una impresora...</option>';
+    
+    printers.forEach(p => {
+        const opt = document.createElement('option');
+        opt.value = p.name;
+        opt.text = `${p.name} ${p.isDefault ? '(Default)' : ''}`;
+        if (p.name === currentVal) opt.selected = true;
+        select.appendChild(opt);
+    });
+    
+    // Si no hay seleccion, seleccionar la default automáticamente
+    if (!select.value) {
+        const def = printers.find(p => p.isDefault);
+        if (def) select.value = def.name;
+    }
+}
+
+async function setPredeterminada(name) {
+    log(`Estableciendo '${name}' como default...`);
+    try {
+        const res = await fetch(`${API_URL}/printers/default`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ printer: name })
+        });
+        const data = await res.json();
+        if (data.success) {
+            log(data.message, 'success');
+            listarImpresoras();
+        } else {
+            throw new Error(data.message);
+        }
+    } catch (e) {
+        log(`Error: ${e.message}`, 'error');
+    }
+}
+
+async function verificarImpresora(name) {
+    log(`Verificando estado de '${name}'...`);
+    try {
+        const res = await fetch(`${API_URL}/printers/${name}`);
+        const data = await res.json();
+        if (data.success) {
+            log(`✅ ${name}: ${data.printer.message || 'Lista'}`, 'success');
+        } else {
+            log(`❌ ${name}: ${data.message}`, 'error');
+        }
+    } catch (e) {
+        log(`Error verificación: ${e.message}`, 'error');
+    }
+}
+
+// --- FUNCIONES MÓVILES (SCAN & CRUD) ---
+
+async function escanear(type) {
+    const resultsDiv = document.getElementById('scan-results');
+    const statusDiv = document.getElementById('scan-status');
+    statusDiv.innerText = `Escaneando ${type}... por favor espere.`;
+    resultsDiv.innerHTML = '';
+    
+    try {
+        const res = await fetch(`${API_URL}/printers/scan?type=${type}`);
+        
+        if (res.status === 501) {
+            statusDiv.innerText = "Esta función no está soportada en Desktop.";
+            return;
+        }
+
+        const data = await res.json();
+        
+        if (data.success) {
+            statusDiv.innerText = `Se encontraron ${data.devices.length} dispositivos.`;
+            data.devices.forEach(dev => {
+                const item = document.createElement('div');
+                item.className = 'scan-item';
+                /* Se usa encodeURIComponent para pasar parámetros seguros */
+                item.onclick = () => prellenarModal(dev.model || dev.name, dev.type, dev.address);
+                item.innerHTML = `
+                    <div>
+                        <strong>${dev.model || 'Desconocido'}</strong>
+                        <small>${dev.address}</small>
+                    </div>
+                    <span class="badge badge-${dev.type === 'NETWORK' ? 'network' : 'bt'}">${dev.type}</span>
+                `;
+                resultsDiv.appendChild(item);
+            });
+        } else {
+            statusDiv.innerText = `Error: ${data.message}`;
+        }
+    } catch (e) {
+        statusDiv.innerText = `Error de escaneo: ${e.message}`;
+    }
+}
+
+function prellenarModal(name, type, target) {
+    document.getElementById('reg-name').value = name;
+    document.getElementById('reg-type').value = type;
+    document.getElementById('reg-target').value = target;
+    mostrarModalRegistro();
+}
+
+async function guardarImpresora() {
+    const name = document.getElementById('reg-name').value;
+    const type = document.getElementById('reg-type').value;
+    const target = document.getElementById('reg-target').value;
+    
+    if (!name || !target) {
+        alert("Todos los campos son obligatorios");
+        return;
+    }
+    
+    log(`Guardando impresora '${name}'...`);
+    try {
+        const res = await fetch(`${API_URL}/printers`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                name: name,
+                type: type,
+                target: target,
+                isDefault: false // Se establece como default explícitamente después si se desea
+            })
+        });
+        const data = await res.json();
+        if (data.success) {
+            log('Impresora guardada correctamente', 'success');
+            cerrarModal();
+            listarImpresoras();
+        } else {
+            alert(`Error: ${data.message}`);
+        }
+    } catch (e) {
+        log(`Error al guardar: ${e.message}`, 'error');
+    }
+}
+
+async function eliminarImpresora(name) {
+    if(!confirm(`¿Seguro que desea eliminar la impresora '${name}'?`)) return;
+    
+    try {
+        const res = await fetch(`${API_URL}/printers/${name}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+            log(`Impresora '${name}' eliminada`, 'success');
+            listarImpresoras();
+        } else {
+            alert(data.message);
+        }
+    } catch (e) {
+        log(`Error al eliminar: ${e.message}`, 'error');
+    }
+}
+
+// --- UI HELPERS ---
+
+function toggleScan() {
+    const area = document.getElementById('scan-area');
+    area.classList.toggle('hidden');
+    document.getElementById('scan-results').innerHTML = '';
+    document.getElementById('scan-status').innerText = '';
+}
+
+function mostrarModalRegistro() {
+    document.getElementById('modal-registro').classList.add('active');
+}
+
+function cerrarModal() {
+    document.getElementById('modal-registro').classList.remove('active');
+    // Limpiar campos
+    document.getElementById('reg-name').value = '';
+    document.getElementById('reg-target').value = '';
+}
+
+function limpiarSelectImpresoras() {
+    document.getElementById('printer-select').innerHTML = '<option>Sin conexión</option>';
+}
+
 function log(msg, type = 'info') {
     const logDiv = document.getElementById('log-output');
     const entry = document.createElement('div');
@@ -150,11 +398,59 @@ function log(msg, type = 'info') {
     logDiv.prepend(entry);
 }
 
-function limpiarImpresoras() {
-    document.getElementById('printer-select').innerHTML = '<option>Sin conexión</option>';
+// --- IMPRESIÓN ---
+
+async function imprimir(tipo) {
+    const printerName = document.getElementById('printer-select').value;
+    
+    const itemPath = REQUEST_FILES[tipo];
+    if (!itemPath) return log(`No existe mapeo para '${tipo}'`, 'error');
+
+    log(`Cargando plantilla ${tipo}...`);
+
+    try {
+        // Cargar localmente el JSON
+        const fileResponse = await fetch(itemPath);
+        if (!fileResponse.ok) throw new Error("Error cargando archivo local");
+        
+        const payload = await fileResponse.json();
+
+        // Asignar impresora seleccionada
+        if (printerName) {
+            payload.printer = printerName;
+        } else {
+            log("⚠️ No se seleccionó impresora. Se usa configuración del JSON.", 'warning');
+        }
+
+        // Enviar a API
+        const res = await fetch(`${API_URL}/print`, {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(payload)
+        });
+
+        // Manejo de respuesta universal
+        let data; 
+        try { data = await res.json(); } catch(e) { throw new Error(`Error parsing JSON: ${res.status}`); }
+
+        if (res.ok && data.success) {
+            log(`✅ Impresión correcta: ${data.message}`, 'success');
+        } else {
+            // Manejar errores estructurados (4xx, 5xx)
+            // La documentación dice que siempre vuelve success: false y error: CODE
+            log(`❌ Error (${data.error || res.status}): ${data.message}`, 'error');
+        }
+
+    } catch (e) {
+        log(`Excepción al imprimir: ${e.message}`, 'error');
+    }
 }
 
-// --- INICIALIZACIÓN ---
+// Inicialización
 document.addEventListener('DOMContentLoaded', () => {
-    verificarEstado();
+    // Verificar si estamos en entorno movil con bridge
+    checkNativeBridge();
+    // No conectamos automáticamente, esperamos acción del usuario
+    log("Frontend listo. Configure la URL del agente y presione Conectar.", 'info');
 });
+
