@@ -145,11 +145,8 @@ async function verificarEstado() {
             // --- Bridge Logic ---
             const bridgeContainer = document.getElementById('bridge-config-container');
             if (bridgeContainer) {
-                // En desktop siempre lo mostramos si hay conexión, en movil dejamos que el usuario lo alterne o lo mostramos si está activo
-                if (data.bridgeTarget || currentPlatform === 'windows') {
-                    bridgeContainer.classList.remove('hidden');
-                }
-                
+                bridgeContainer.classList.remove('hidden');
+                bridgeContainer.style.display = 'flex'; // Asegurar layout flex
                 const bridgeInput = document.getElementById('bridge-url');
                 const bridgeBtn = document.getElementById('btn-bridge');
                 const bridgeBadge = document.getElementById('bridge-status-badge');
@@ -191,15 +188,26 @@ async function verificarEstado() {
         limpiarSelectImpresoras();
         
         const bridgeContainer = document.getElementById('bridge-config-container');
-        if (bridgeContainer) bridgeContainer.classList.add('hidden');
+        if (bridgeContainer) {
+            bridgeContainer.classList.add('hidden');
+            bridgeContainer.style.display = 'none';
+        }
     }
 }
 
 function actualizarUIPorPlataforma() {
     const isMobile = currentPlatform === 'android' || currentPlatform === 'ios';
     
-    // Aplicar clase al body para disparar reglas CSS
-    document.body.className = isMobile ? 'platform-mobile' : 'platform-desktop';
+    // Sincronizar clases con el body para que las reglas CSS del index funcionen
+    const body = document.getElementById('app-body');
+    if (body) {
+        body.classList.remove('platform-mobile', 'platform-desktop');
+        if (isMobile) {
+            body.classList.add('platform-mobile');
+        } else if (currentPlatform !== 'unknown') {
+            body.classList.add('platform-desktop');
+        }
+    }
 
     const mobileElements = document.querySelectorAll('.mobile-only');
     
