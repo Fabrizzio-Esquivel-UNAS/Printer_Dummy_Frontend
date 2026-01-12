@@ -142,6 +142,32 @@ async function verificarEstado() {
             currentPlatform = data.platform ? data.platform.toLowerCase() : 'unknown';
             log(`Agente conectado: Versión ${data.version} en ${data.host} (${currentPlatform})`, 'success');
 
+            // --- Bridge Logic ---
+            const bridgeContainer = document.getElementById('bridge-config-container');
+            if (bridgeContainer) {
+                bridgeContainer.style.display = 'flex';
+                const bridgeInput = document.getElementById('bridge-url');
+                const bridgeBtn = document.getElementById('btn-bridge');
+                const bridgeBadge = document.getElementById('bridge-status-badge');
+
+                if (data.bridgeTarget) {
+                    bridgeInput.value = data.bridgeTarget;
+                    bridgeInput.disabled = true;
+                    bridgeBtn.innerText = "Desactivar";
+                    bridgeBtn.style.backgroundColor = "#ef4444"; 
+                    bridgeBtn.onclick = () => toggleBridge(false);
+                    bridgeBadge.style.display = 'block';
+                    bridgeBadge.innerText = "EN PUENTE";
+                    bridgeBadge.title = `Redirigiendo a: ${data.bridgeTarget}`;
+                } else {
+                     bridgeInput.disabled = false;
+                     bridgeBtn.innerText = "Activar";
+                     bridgeBtn.style.backgroundColor = "#2563eb";
+                     bridgeBtn.onclick = () => toggleBridge(true);
+                     bridgeBadge.style.display = 'none';
+                }
+            }
+
             // Actualizar UI según plataforma
             actualizarUIPorPlataforma();
             
@@ -159,6 +185,9 @@ async function verificarEstado() {
         
         document.getElementById('printer-list-container').innerHTML = '<p style="text-align:center; color:#ef4444">Agente desconectado.</p>';
         limpiarSelectImpresoras();
+        
+        const bridgeContainer = document.getElementById('bridge-config-container');
+        if (bridgeContainer) bridgeContainer.style.display = 'none';
     }
 }
 
@@ -169,6 +198,49 @@ function actualizarUIPorPlataforma() {
     mobileElements.forEach(el => {
         el.style.display = isMobile ? 'block' : 'none'; 
     });
+}
+
+// --- PUENTE / BRIDGE ---
+
+async function toggleBridge(enable) {
+    if (!API_URL) return;
+    
+    const bridgeInput = document.getElementById('bridge-url');
+    let targetUrl = null;
+
+    if (enable) {
+        targetUrl = bridgeInput.value.trim();
+        if (!targetUrl) {
+            alert("Ingrese la URL del Nodo Maestro (ej. http://192.168.1.50:5050)");
+            return;
+        }
+        if (!targetUrl.startsWith('http')) {
+            targetUrl = 'http://' + targetUrl;
+        }
+    }
+
+    log(`${enable ? 'Activando' : 'Desactivando'} Modo Puente...`, 'info');
+
+    try {
+        const response = await fetch(`${API_URL}/bridge`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ targetUrl: targetUrl })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            log(data.message, 'success');
+            // Refresh completly to update UI
+            verificarEstado();
+        } else {
+            log(`Error Bridge: ${data.message || 'Desconocido'}`, 'error');
+            alert(`Error: ${data.message || 'Falló el cambio de modo'}`);
+        }
+    } catch (e) {
+        log(`Excepción al cambiar modo Bridge: ${e.message}`, 'error');
+    }
 }
 
 // --- GESTIÓN DE IMPRESORAS ---
