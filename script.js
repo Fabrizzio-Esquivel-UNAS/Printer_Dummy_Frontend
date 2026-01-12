@@ -145,7 +145,11 @@ async function verificarEstado() {
             // --- Bridge Logic ---
             const bridgeContainer = document.getElementById('bridge-config-container');
             if (bridgeContainer) {
-                bridgeContainer.style.display = 'flex';
+                // En desktop siempre lo mostramos si hay conexión, en movil dejamos que el usuario lo alterne o lo mostramos si está activo
+                if (data.bridgeTarget || currentPlatform === 'windows') {
+                    bridgeContainer.classList.remove('hidden');
+                }
+                
                 const bridgeInput = document.getElementById('bridge-url');
                 const bridgeBtn = document.getElementById('btn-bridge');
                 const bridgeBadge = document.getElementById('bridge-status-badge');
@@ -187,12 +191,16 @@ async function verificarEstado() {
         limpiarSelectImpresoras();
         
         const bridgeContainer = document.getElementById('bridge-config-container');
-        if (bridgeContainer) bridgeContainer.style.display = 'none';
+        if (bridgeContainer) bridgeContainer.classList.add('hidden');
     }
 }
 
 function actualizarUIPorPlataforma() {
     const isMobile = currentPlatform === 'android' || currentPlatform === 'ios';
+    
+    // Aplicar clase al body para disparar reglas CSS
+    document.body.className = isMobile ? 'platform-mobile' : 'platform-desktop';
+
     const mobileElements = document.querySelectorAll('.mobile-only');
     
     mobileElements.forEach(el => {
