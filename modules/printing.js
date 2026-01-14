@@ -110,11 +110,6 @@ async function generarVistaPrevia() {
 
         if (res.ok && data.success) {
             log(`✅ Vista previa generada.`, 'success');
-            console.log('Respuesta preview:', data);
-            if (!data.previewBase64) {
-                log(`⚠️ Advertencia: previewBase64 no encontrado en respuesta`, 'warning');
-                console.log('Propiedades disponibles:', Object.keys(data));
-            }
             mostrarPrevisualizacion(data.previewBase64); 
         } else {
             log(`❌ Error Vista Previa: ${data.message}`, 'error');
