@@ -108,21 +108,59 @@
             </div>
         </section>
 
-        <!-- Printing Test Section -->
+        <!-- Printing & Preview Section -->
         <section class="actions-section">
-            <h2>Pruebas de Impresión</h2>
-            <div style="margin-bottom: 1.5rem; background: #fff; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0;">
-                 <label for="printer-select" style="font-weight: 600; margin-right: 10px;">🖨️ Impresora Destino:</label>
-                 <select id="printer-select" style="padding: 6px; border-radius: 4px; border: 1px solid #cbd5e1; min-width: 200px;">
-                    <option value="">Seleccione una impresora...</option>
-                 </select>
+            <h2>Gestión de Solicitudes</h2>
+
+            <div style="background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0; margin-bottom: 20px;">
+                <div class="form-group">
+                    <label for="request-select">Tipo de Solicitud</label>
+                    <select id="request-select" onchange="handleRequestTypeChange()" style="width: 100%;">
+                        <option value="restaurant">🍔 Comanda Restaurante</option>
+                        <option value="notaVenta">📝 Nota de Venta</option>
+                        <option value="factura">📄 Factura Electrónica</option>
+                        <option value="boleta">🧾 Boleta Electrónica</option>
+                        <option value="custom">🛠️ Personalizada</option>
+                    </select>
+                </div>
+
+                <div id="custom-json-container" class="hidden" style="margin-top: 15px;">
+                    <label for="custom-json-text">JSON Personalizado</label>
+                    <textarea id="custom-json-text" rows="10" style="width: 100%; border: 1px solid #cbd5e1; border-radius: 6px; font-family: monospace; padding: 8px; box-sizing: border-box; margin-top: 5px;"></textarea>
+                </div>
             </div>
-            
-            <div class="button-grid">
-                <button onclick="imprimir('restaurant')" class="print-btn restaurant">🍔 Comanda Rest.</button>
-                <button onclick="imprimir('notaVenta')" class="print-btn note">📝 Nota Venta</button>
-                <button onclick="imprimir('factura')" class="print-btn invoice">📄 Factura Elect.</button>
-                <button onclick="imprimir('boleta')" class="print-btn receipt">🧾 Boleta Elect.</button>
+
+            <div style="display: flex; flex-direction: column; gap: 20px;">
+                
+                <!-- Print Section -->
+                <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <h3 style="margin-top: 0; margin-bottom: 10px; color: #1e293b;">Imprimir</h3>
+                    <div style="display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 250px;">
+                            <label for="printer-select" style="display: block; margin-bottom: 5px; font-weight: 600;">🖨️ Impresora Destino</label>
+                            <select id="printer-select" style="width: 100%;">
+                                <option value="">Seleccione una impresora...</option>
+                            </select>
+                        </div>
+                        <button onclick="ejecutarImpresion()" class="primary-btn" style="height: 42px; min-width: 120px; background-color: var(--primary-color); color: white;">🖨️ Imprimir</button>
+                    </div>
+                </div>
+
+                <!-- Preview Section -->
+                <div style="background: #f8fafc; padding: 15px; border-radius: 8px; border: 1px solid #e2e8f0;">
+                    <h3 style="margin-top: 0; margin-bottom: 10px; color: #1e293b;">Vista Previa</h3>
+                    <div style="display: flex; gap: 10px; align-items: flex-start; flex-wrap: wrap;">
+                        <button onclick="generarVistaPrevia()" class="secondary-btn" style="height: 42px; min-width: 120px; background-color: #64748b; color: white;">👁️ Generar Vista Previa</button>
+                    </div>
+                     <div id="preview-container" class="hidden" style="margin-top: 15px; background: #e2e8f0; padding: 15px; border-radius: 8px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                             <strong style="color: #334155;">Resultado:</strong>
+                             <button onclick="document.getElementById('preview-container').classList.add('hidden')" style="background:none; border:none; cursor:pointer;">✖</button>
+                        </div>
+                        <div id="preview-image-placeholder" style="overflow: auto; text-align: center;"></div>
+                    </div>
+                </div>
+                
             </div>
         </section>
 
@@ -134,6 +172,17 @@
             <div id="log-output"></div>
         </section>
     </div>
+
+    <!-- Modular Scripts -->
+    <script src="modules/config.js"></script>
+    <script src="modules/logger.js"></script>
+    <script src="modules/nativeBridge.js"></script>
+    <script src="modules/agent.js"></script>
+    <script src="modules/bridge.js"></script>
+    <script src="modules/printers.js"></script>
+    <script src="modules/printing.js"></script>
+    <script src="modules/uiHelpers.js"></script>
+    <script src="modules/init.js"></script>
 
     <!-- Modal Registro -->
     <div id="modal-registro" class="modal-overlay">
@@ -161,7 +210,5 @@
             </div>
         </div>
     </div>
-
-    <script src="script.js"></script>
 </body>
 </html>
