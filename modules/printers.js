@@ -124,39 +124,71 @@ async function verificarImpresora(name) {
     }
 }
 
-async function escanear(type) {
+async function escanear(type = '') {
     const resultsDiv = document.getElementById('scan-results');
     const statusDiv = document.getElementById('scan-status');
-    statusDiv.innerText = `Escaneando ${type}... por favor espere.`;
+    statusDiv.innerText = `Escaneando ${type || 'todos los dispositivos'}... por favor espere.`;
     resultsDiv.innerHTML = '';
     
+    let count = 0;
+
     try {
-        const res = await fetch(`${API_URL}/printers/scan?type=${type}`);
+        const query = type ? `?type=${type}` : '';
+        const res = await fetch(`${API_URL}/printers/scan${query}`);
         
         if (res.status === 501) {
             statusDiv.innerText = "Esta función no está soportada en Desktop.";
             return;
         }
 
-        const data = await res.json();
-        
-        if (data.success) {
-            statusDiv.innerText = `Se encontraron ${data.devices.length} dispositivos.`;
-            data.devices.forEach(dev => {
-                const item = document.createElement('div');
-                item.className = 'scan-item';
-                item.onclick = () => prellenarModal(dev.model || dev.name, dev.type, dev.address);
-                item.innerHTML = `
-                    <div>
-                        <strong>${dev.model || 'Desconocido'}</strong>
-                        <small>${dev.address}</small>
-                    </div>
-                    <span class="badge badge-${dev.type === 'NETWORK' ? 'network' : 'bt'}">${dev.type}</span>
-                `;
-                resultsDiv.appendChild(item);
-            });
-        } else {
-            statusDiv.innerText = `Error: ${data.message}`;
+        if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            throw new Error(data.message || `Error HTTP ${res.status}`);
+        }
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+            
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop(); // Mantener línea incompleta en el buffer
+
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed) continue;
+
+                if (trimmed.startsWith('data: ')) {
+                    const dataStr = trimmed.substring(6).trim();
+                    if (dataStr === '{}') continue;
+                    
+                    try {
+                        const dev = JSON.parse(dataStr);
+                        count++;
+                        statusDiv.innerText = `Buscando... (${count} encontrados)`;
+                        
+                        const item = document.createElement('div');
+                        item.className = 'scan-item';
+                        item.onclick = () => prellenarModal(dev.model || 'Desconocido', dev.type, dev.address);
+                        item.innerHTML = `
+                            <div>
+                                <strong>${dev.model || 'Desconocido'}</strong>
+                                <small>${dev.address} ${dev.source ? `(${dev.source})` : ''}</small>
+                            </div>
+                            <span class="badge badge-${dev.type === 'NETWORK' ? 'network' : 'bt'}">${dev.type}</span>
+                        `;
+                        resultsDiv.appendChild(item);
+                    } catch (e) {
+                        console.error("Error al parsear dispositivo:", e, dataStr);
+                    }
+                } else if (trimmed.startsWith('event: done')) {
+                    statusDiv.innerText = `Escaneo finalizado. Se encontraron ${count} dispositivos.`;
+                }
+            }
         }
     } catch (e) {
         statusDiv.innerText = `Error de escaneo: ${e.message}`;
