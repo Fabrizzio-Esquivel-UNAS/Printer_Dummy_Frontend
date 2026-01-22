@@ -6,20 +6,54 @@ async function listarImpresoras() {
     const select = document.getElementById('printer-select');
     
     const currentSelection = select.value;
+    const printers = [];
+
+    container.innerHTML = '<div style="text-align: center; padding: 20px; color: #64748b;">Buscando impresoras...</div>';
 
     try {
-        const response = await fetch(`${API_URL}/printers`);
-        const data = await response.json();
+        const res = await fetch(`${API_URL}/printers`);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        if (data.success) {
-            renderPrinterList(data.printers);
-            renderPrinterSelect(data.printers, currentSelection);
-        } else {
-            container.innerHTML = `<p>Error al obtener lista: ${data.message || 'Desconocido'}</p>`;
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop();
+
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed) continue;
+
+                if (trimmed.startsWith('data: ')) {
+                    const dataStr = trimmed.substring(6).trim();
+                    if (dataStr === '{}') continue;
+
+                    try {
+                        const p = JSON.parse(dataStr);
+                        printers.push(p);
+                        renderPrinterList(printers);
+                        renderPrinterSelect(printers, currentSelection);
+                    } catch (e) {
+                        console.error("Error al parsear impresora:", e, dataStr);
+                    }
+                } else if (trimmed.startsWith('event: done')) {
+                    log(`Lista de impresoras cargada (${printers.length} encontradas)`, 'success');
+                }
+            }
+        }
+
+        if (printers.length === 0) {
+            container.innerHTML = '<p style="text-align:center; color:#64748b;">No hay impresoras configuradas.</p>';
         }
     } catch (e) {
         log("Error de red al listar impresoras", 'error');
-        container.innerHTML = `<p>Error de conexión.</p>`;
+        container.innerHTML = `<p style="text-align:center; color:#ef4444">Error de conexión: ${e.message}</p>`;
     }
 }
 
@@ -45,15 +79,9 @@ function renderPrinterList(printers) {
             <div class="actions-row">
                 ${!p.isDefault ? `<button onclick="setPredeterminada('${p.name}')" class="secondary-btn btn-sm" title="Marcar como predeterminada">★</button>` : ''}
                 <button onclick="verificarImpresora('${p.name}')" class="secondary-btn btn-sm" title="Verificar estado">❓ Info</button>
+                ${p.type === 'NETWORK' ? `<button onclick="eliminarImpresora('${p.name}')" class="danger-btn btn-sm" title="Eliminar">🗑</button>` : ''}
+            </div>
         `;
-
-        if (isMobile) {
-            actionsHtml += `
-                <button onclick="eliminarImpresora('${p.name}')" class="danger-btn btn-sm" title="Eliminar">🗑</button>
-            `;
-        }
-        
-        actionsHtml += `</div>`;
 
         card.innerHTML = `
             <div class="printer-info">

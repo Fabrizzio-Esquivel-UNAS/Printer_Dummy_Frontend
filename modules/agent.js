@@ -110,11 +110,6 @@ function actualizarUIPorPlataforma() {
             body.classList.add('platform-desktop');
         }
     }
-
-    const mobileElements = document.querySelectorAll('.mobile-only');
-    mobileElements.forEach(el => {
-        el.style.display = isMobile ? 'block' : 'none'; 
-    });
 }
 
 function limpiarSelectImpresoras() {

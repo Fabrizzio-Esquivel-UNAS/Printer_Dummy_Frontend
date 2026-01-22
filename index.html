@@ -7,10 +7,6 @@
     <link rel="stylesheet" href="styles.css">
     <style>
         .hidden { display: none !important; }
-        .mobile-only { display: none; }
-        .platform-mobile .mobile-only { display: block; }
-        .platform-mobile .desktop-only { display: none; }
-        .platform-desktop .mobile-only { display: none; }
         
         .printer-card { 
             background: white; border: 1px solid #e2e8f0; padding: 15px; 
@@ -83,28 +79,32 @@
         <!-- Management Section -->
         <section class="config-section">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem; flex-wrap: wrap; gap: 10px;">
-                <h2>Gestión de Impresoras</h2>
-                <div class="mobile-only" style="display: none;"> <!-- Controlled by JS -->
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <h2>Gestión de Impresoras</h2>
+                    <button onclick="toggleSection('printer-management-content', this)" class="secondary-btn btn-sm" style="padding: 0; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 0.8rem;">▼</button>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="listarImpresoras()" class="secondary-btn btn-sm">🔄 Actualizar</button>
                     <button onclick="mostrarModalRegistro()" class="secondary-btn btn-sm">➕ Agregar Manual</button>
-                    <button onclick="toggleScan()" class="secondary-btn btn-sm">🔍 Escanear</button>
+                    <button onclick="iniciarEscaneo()" class="secondary-btn btn-sm">🔍 Escanear</button>
                 </div>
             </div>
 
-            <!-- Scan Area (Mobile) -->
-            <div id="scan-area" class="hidden" style="margin-bottom: 20px; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; background: #f8fafc;">
-                <h4 style="margin-top:0; color:#475569;">Escanear Dispositivos</h4>
-                <div style="display:flex; gap:10px; margin-bottom:10px; flex-wrap: wrap;">
-                    <button onclick="escanear('network')" class="secondary-btn btn-sm">Red (9100)</button>
-                    <button onclick="escanear('bluetooth')" class="secondary-btn btn-sm">Bluetooth</button>
-                    <button onclick="toggleScan()" style="margin-left:auto; color:#ef4444; border:none; background:none; cursor:pointer; font-weight:bold;">Cerrar ✖</button>
+            <div id="printer-management-content">
+                <!-- Scan Area (Mobile) -->
+                <div id="scan-area" class="hidden" style="margin-bottom: 20px; border: 1px solid #e2e8f0; padding: 15px; border-radius: 8px; background: #f8fafc;">
+                    <h4 style="margin-top:0; color:#475569;">Escanear Dispositivos</h4>
+                    <div style="display:flex; justify-content: flex-end; margin-bottom:10px;">
+                        <button onclick="toggleScan()" style="color:#ef4444; border:none; background:none; cursor:pointer; font-weight:bold;">Cerrar ✖</button>
+                    </div>
+                    <div id="scan-status" style="margin:5px 0; font-style:italic; font-size:0.85rem; color:#64748b;"></div>
+                    <div id="scan-results" class="scan-grid"></div>
                 </div>
-                <div id="scan-status" style="margin:5px 0; font-style:italic; font-size:0.85rem; color:#64748b;"></div>
-                <div id="scan-results" class="scan-grid"></div>
-            </div>
 
-            <!-- Printer List -->
-            <div id="printer-list-container">
-                <div style="text-align: center; padding: 20px; color: #64748b;">Cargando lista de impresoras...</div>
+                <!-- Printer List -->
+                <div id="printer-list-container">
+                    <div style="text-align: center; padding: 20px; color: #64748b;">Cargando lista de impresoras...</div>
+                </div>
             </div>
         </section>
 
@@ -196,7 +196,6 @@
                 <label>Tipo de Conexión</label>
                 <select id="reg-type">
                     <option value="NETWORK">Red (Ethernet/WiFi)</option>
-                    <option value="BLUETOOTH">Bluetooth</option>
                 </select>
             </div>
             <div class="form-group">
