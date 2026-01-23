@@ -78,8 +78,9 @@
     },
     {
       "type": "barcode",
-      "value": "P01-00000727",
-      "thickness": 200
+      "value": "978020137962",
+      "style": "ean13",
+      "height": 200
     },
     {
       "type": "cut"
