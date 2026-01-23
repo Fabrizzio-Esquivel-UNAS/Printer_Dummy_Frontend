@@ -7,7 +7,7 @@
       "type": "text",
       "value": "PRINCIPAL LEAD WORKING",
       "align": "center",
-      "font": "bold"
+      "bold": true
     },
     {
       "type": "text",
@@ -27,7 +27,7 @@
       "type": "text",
       "value": "NRO: P01-00000727",
       "align": "center",
-      "font": "bold"
+      "bold": true
     },
     {
       "type": "separator",
@@ -68,7 +68,7 @@
       "type": "row",
       "cols": [
         { "value": "TOTAL:", "align": "right", "width": 0.5 },
-        { "value": "S/ 7.00", "align": "right", "width": 0.5, "font": "bold" }
+        { "value": "S/ 7.00", "align": "right", "width": 0.5, "bold": true }
       ]
     },
     {
@@ -79,7 +79,7 @@
     {
       "type": "barcode",
       "value": "P01-00000727",
-      "width": 200
+      "thickness": 200
     },
     {
       "type": "cut"

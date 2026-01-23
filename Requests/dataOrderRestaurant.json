@@ -7,7 +7,7 @@
       "type": "text",
       "value": "PRINCIPAL LEAD WORKING",
       "align": "center",
-      "font": "bold"
+      "bold": true
     },
     {
       "type": "text",
@@ -60,15 +60,15 @@
     {
       "type": "row",
       "cols": [
-        { "value": "TOTAL A PAGAR:", "align": "right", "width": 0.60, "font": "bold" },
-        { "value": "S/ 30.00", "align": "right", "width": 0.40, "font": "bold" }
+        { "value": "TOTAL A PAGAR:", "align": "right", "width": 0.60, "bold": true },
+        { "value": "S/ 30.00", "align": "right", "width": 0.40, "bold": true }
       ]
     },
     {
       "type": "text",
       "value": "No válido como comprobante fiscal",
       "align": "center",
-      "font": "small"
+      "fontType": "fontB"
     },
     {
       "type": "cut"

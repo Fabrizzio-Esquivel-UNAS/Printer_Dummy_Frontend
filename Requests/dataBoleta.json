@@ -8,7 +8,7 @@
       "type": "text",
       "value": "PRINCIPAL LEAD WORKING",
       "align": "center",
-      "font": "bold"
+      "bold": true
     },
     {
       "type": "block",
@@ -19,7 +19,7 @@
       "type": "text",
       "value": "SERIE: P01-00000746",
       "align": "center",
-      "font": "bold"
+      "bold": true
     },
     {
       "type": "separator",
@@ -68,14 +68,14 @@
       "type": "row",
       "cols": [
         { "value": "TOTAL A PAGAR:", "align": "right", "width": 0.6 },
-        { "value": "S/ 8.00", "align": "right", "width": 0.4, "font": "bold" }
+        { "value": "S/ 8.00", "align": "right", "width": 0.4, "bold": true }
       ]
     },
     {
       "type": "text",
       "value": "Cajero: RONALD LLERENA",
       "align": "left",
-      "font": "small"
+      "fontType": "fontB"
     },
     {
       "type": "text",

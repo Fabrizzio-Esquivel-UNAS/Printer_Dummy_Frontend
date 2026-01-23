@@ -7,7 +7,7 @@
       "type": "text",
       "value": "PRINCIPAL LEAD WORKING",
       "align": "center",
-      "font": "bold"
+      "bold": true
     },
     {
       "type": "text",
@@ -27,7 +27,7 @@
       "type": "text",
       "value": "001-00009241",
       "align": "center",
-      "font": "bold"
+      "bold": true
     },
     {
       "type": "separator",
@@ -94,26 +94,26 @@
     {
       "type": "row",
       "cols": [
-        { "value": "IMPORTE TOTAL:", "align": "right", "width": 0.6, "font": "bold" },
-        { "value": "S/ 17.70", "align": "right", "width": 0.4, "font": "bold" }
+        { "value": "IMPORTE TOTAL:", "align": "right", "width": 0.6, "bold": true },
+        { "value": "S/ 17.70", "align": "right", "width": 0.4, "bold": true }
       ]
     },
     {
       "type": "text",
       "value": "Son: DIECISIETE CON 70/100 SOLES",
       "align": "left",
-      "font": "small"
+      "fontType": "fontB"
     },
     {
       "type": "qr",
       "value": "20000000001|01|001|00009241|2.70|17.70|05/01/2026|6|10753276209|",
-      "width": 150
+      "width": 4
     },
     {
       "type": "text",
       "value": "Representación impresa de la FE",
       "align": "center",
-      "font": "small"
+      "fontType": "fontB"
     },
     {
       "type": "cut"
