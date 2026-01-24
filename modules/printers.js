@@ -88,7 +88,7 @@ function renderPrinterList(printers) {
                 <h3>${p.name}</h3>
                 <div class="printer-meta">
                     ${badgesHtml}
-                    <span>${p.target || 'N/A'}</span>
+                    <span>${p.address || 'N/A'}</span>
                     <span>${p.status || 'UNKNOWN'}</span>
                 </div>
             </div>
@@ -223,19 +223,19 @@ async function escanear(type = '') {
     }
 }
 
-function prellenarModal(name, type, target) {
+function prellenarModal(name, type, address) {
     document.getElementById('reg-name').value = name;
     document.getElementById('reg-type').value = type;
-    document.getElementById('reg-target').value = target;
+    document.getElementById('reg-address').value = address;
     mostrarModalRegistro();
 }
 
 async function guardarImpresora() {
     const name = document.getElementById('reg-name').value;
     const type = document.getElementById('reg-type').value;
-    const target = document.getElementById('reg-target').value;
+    const address = document.getElementById('reg-address').value;
     
-    if (!name || !target) {
+    if (!name || !address) {
         alert("Todos los campos son obligatorios");
         return;
     }
@@ -248,7 +248,7 @@ async function guardarImpresora() {
             body: JSON.stringify({
                 name: name,
                 type: type,
-                target: target,
+                address: address,
                 isDefault: false
             })
         });

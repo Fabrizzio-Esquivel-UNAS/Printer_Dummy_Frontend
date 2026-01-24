@@ -31,5 +31,5 @@ function mostrarModalRegistro() {
 function cerrarModal() {
     document.getElementById('modal-registro').classList.remove('active');
     document.getElementById('reg-name').value = '';
-    document.getElementById('reg-target').value = '';
+    document.getElementById('reg-address').value = '';
 }
