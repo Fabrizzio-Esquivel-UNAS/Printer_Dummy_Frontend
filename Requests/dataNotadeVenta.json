@@ -79,8 +79,7 @@
     {
       "type": "barcode",
       "value": "978020137962",
-      "style": "ean13",
-      "height": 200
+      "style": "ean13"
     },
     {
       "type": "cut"
