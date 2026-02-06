@@ -4,7 +4,7 @@
 async function listarImpresoras() {
     const container = document.getElementById('printer-list-container');
     const select = document.getElementById('printer-select');
-    
+
     const currentSelection = select.value;
     const printers = [];
 
@@ -71,7 +71,7 @@ function renderPrinterList(printers) {
     printers.forEach(p => {
         const card = document.createElement('div');
         card.className = 'printer-card';
-        
+
         let badgesHtml = `<span class="badge badge-${p.type === 'NETWORK' ? 'network' : (p.type === 'BLUETOOTH' ? 'bt' : 'driver')}">${p.type}</span>`;
         if (p.isDefault) badgesHtml += ` <span class="badge badge-default">DEFAULT</span>`;
 
@@ -89,12 +89,12 @@ function renderPrinterList(printers) {
                 <div class="printer-meta">
                     ${badgesHtml}
                     <span>${p.address || 'N/A'}</span>
-                    <span>${p.status || 'UNKNOWN'}</span>
+                    <span class="printer-status">${p.status || 'UNKNOWN'}</span>
                 </div>
             </div>
             ${actionsHtml}
         `;
-        
+
         container.appendChild(card);
     });
 }
@@ -102,7 +102,7 @@ function renderPrinterList(printers) {
 function renderPrinterSelect(printers, currentVal) {
     const select = document.getElementById('printer-select');
     select.innerHTML = '<option value="">Seleccione una impresora...</option>';
-    
+
     printers.forEach(p => {
         const opt = document.createElement('option');
         opt.value = p.name;
@@ -110,7 +110,7 @@ function renderPrinterSelect(printers, currentVal) {
         if (p.name === currentVal) opt.selected = true;
         select.appendChild(opt);
     });
-    
+
     if (!select.value) {
         const def = printers.find(p => p.isDefault);
         if (def) select.value = def.name;
@@ -122,7 +122,7 @@ async function setPredeterminada(name) {
     try {
         const res = await fetch(`${API_URL}/printers/default`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ printer: name })
         });
         const data = await res.json();
@@ -141,14 +141,75 @@ async function verificarImpresora(name) {
     log(`Verificando estado de '${name}'...`);
     try {
         const res = await fetch(`${API_URL}/printers/${name}`);
-        const data = await res.json();
-        if (data.success) {
-            log(`✅ ${name}: ${data.printer.message || 'Lista'}`, 'success');
-        } else {
-            log(`❌ ${name}: ${data.message}`, 'error');
+
+        if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            throw new Error(data.message || `HTTP ${res.status}`);
+        }
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+            const { value, done } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split('\n');
+            buffer = lines.pop(); // Keep incomplete line in buffer
+
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (!trimmed) continue;
+
+                if (trimmed.startsWith('data: ')) {
+                    const dataStr = trimmed.substring(6).trim();
+                    if (dataStr === '{}') continue;
+
+                    try {
+                        const p = JSON.parse(dataStr);
+
+                        // Update UI log
+                        if (p.status === 'ONLINE') {
+                            log(`✅ ${p.name}: ONLINE`, 'success');
+                        } else if (p.status === 'OFFLINE') {
+                            log(`❌ ${p.name}: OFFLINE`, 'error');
+                        } else {
+                            log(`ℹ️ ${p.name}: ${p.status}`);
+                        }
+
+                        // DOM Update (Bonus)
+                        updatePrinterStatusInList(p);
+
+                    } catch (e) {
+                        console.error("Error al parsear evento de estado:", e, dataStr);
+                    }
+                } else if (trimmed.startsWith('event: done')) {
+                    // Stream finished normally
+                }
+            }
         }
     } catch (e) {
         log(`Error verificación: ${e.message}`, 'error');
+    }
+}
+
+function updatePrinterStatusInList(printer) {
+    // Attempt to find the printer card in the DOM and update status
+    // This assumes the printer names are unique and rendered.
+    // Finding by text content is fragile, ideally we should have IDs, but this fits the current 'dummy' structure.
+    const cards = document.querySelectorAll('.printer-card');
+    for (const card of cards) {
+        const title = card.querySelector('h3');
+        if (title && title.innerText === printer.name) {
+            const statusSpan = card.querySelector('.printer-status');
+            if (statusSpan) {
+                statusSpan.innerText = printer.status;
+                // Optional: Add visual cue or color change based on status
+            }
+            break;
+        }
     }
 }
 
@@ -157,13 +218,13 @@ async function escanear(type = '') {
     const statusDiv = document.getElementById('scan-status');
     statusDiv.innerText = `Escaneando ${type || 'todos los dispositivos'}... por favor espere.`;
     resultsDiv.innerHTML = '';
-    
+
     let count = 0;
 
     try {
         const query = type ? `?type=${type}` : '';
         const res = await fetch(`${API_URL}/printers/scan${query}`);
-        
+
         if (res.status === 501) {
             statusDiv.innerText = "Esta función no está soportada en Desktop.";
             return;
@@ -181,7 +242,7 @@ async function escanear(type = '') {
         while (true) {
             const { value, done } = await reader.read();
             if (done) break;
-            
+
             buffer += decoder.decode(value, { stream: true });
             const lines = buffer.split('\n');
             buffer = lines.pop(); // Mantener línea incompleta en el buffer
@@ -193,12 +254,12 @@ async function escanear(type = '') {
                 if (trimmed.startsWith('data: ')) {
                     const dataStr = trimmed.substring(6).trim();
                     if (dataStr === '{}') continue;
-                    
+
                     try {
                         const dev = JSON.parse(dataStr);
                         count++;
                         statusDiv.innerText = `Buscando... (${count} encontrados)`;
-                        
+
                         const item = document.createElement('div');
                         item.className = 'scan-item';
                         item.onclick = () => prellenarModal(dev.model || 'Desconocido', dev.type, dev.address);
@@ -234,17 +295,17 @@ async function guardarImpresora() {
     const name = document.getElementById('reg-name').value;
     const type = document.getElementById('reg-type').value;
     const address = document.getElementById('reg-address').value;
-    
+
     if (!name || !address) {
         alert("Todos los campos son obligatorios");
         return;
     }
-    
+
     log(`Guardando impresora '${name}'...`);
     try {
         const res = await fetch(`${API_URL}/printers`, {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 name: name,
                 type: type,
@@ -266,8 +327,8 @@ async function guardarImpresora() {
 }
 
 async function eliminarImpresora(name) {
-    if(!confirm(`¿Seguro que desea eliminar la impresora '${name}'?`)) return;
-    
+    if (!confirm(`¿Seguro que desea eliminar la impresora '${name}'?`)) return;
+
     try {
         const res = await fetch(`${API_URL}/printers/${name}`, { method: 'DELETE' });
         const data = await res.json();
