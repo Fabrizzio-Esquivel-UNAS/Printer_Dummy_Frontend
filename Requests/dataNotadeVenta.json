@@ -1,5 +1,4 @@
-{
-  "action": "customizedPrint",
+﻿{
   "printer": "",
   "paperSize": "80mm",
   "commands": [
@@ -55,9 +54,21 @@
     {
       "type": "row",
       "cols": [
-        { "value": "1", "align": "left", "width": 0.1 },
-        { "value": "conigv- bebida", "align": "left", "width": 0.6 },
-        { "value": "7.00", "align": "right", "width": 0.3 }
+        {
+          "value": "1",
+          "align": "left",
+          "width": 1
+        },
+        {
+          "value": "conigv- bebida",
+          "align": "left",
+          "width": 7
+        },
+        {
+          "value": "7.00",
+          "align": "right",
+          "width": 4
+        }
       ]
     },
     {
@@ -67,8 +78,17 @@
     {
       "type": "row",
       "cols": [
-        { "value": "TOTAL:", "align": "right", "width": 0.5 },
-        { "value": "S/ 7.00", "align": "right", "width": 0.5, "bold": true }
+        {
+          "value": "TOTAL:",
+          "align": "right",
+          "width": 6
+        },
+        {
+          "value": "S/ 7.00",
+          "align": "right",
+          "width": 6,
+          "bold": true
+        }
       ]
     },
     {

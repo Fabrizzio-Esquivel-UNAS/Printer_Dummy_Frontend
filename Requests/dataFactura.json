@@ -1,122 +1,59 @@
-{
-  "action": "customizedPrint",
+﻿{
   "printer": "",
   "paperSize": "80mm",
   "commands": [
-    {
-      "type": "text",
-      "value": "PRINCIPAL LEAD WORKING",
-      "align": "center",
-      "bold": true
-    },
-    {
-      "type": "text",
-      "value": "Av. Principal S/N - Rupa Rupa",
-      "align": "center"
-    },
-    {
-      "type": "separator",
-      "style": "solid"
-    },
-    {
-      "type": "block",
-      "value": "FACTURA ELECTRONICA",
-      "align": "center"
-    },
-    {
-      "type": "text",
-      "value": "001-00009241",
-      "align": "center",
-      "bold": true
-    },
-    {
-      "type": "separator",
-      "style": "dash"
-    },
-    {
-      "type": "text",
-      "value": "Fecha: 05/01/2026",
-      "align": "left"
-    },
-    {
-      "type": "text",
-      "value": "Cliente: DAMIAN PEREZ JONATHAN",
-      "align": "left"
-    },
-    {
-      "type": "text",
-      "value": "RUC: 10753276209",
-      "align": "left"
-    },
-    {
-      "type": "text",
-      "value": "Dirección: HABIDO",
-      "align": "left"
-    },
-    {
-      "type": "separator",
-      "style": "dash"
-    },
+    { "type": "text", "value": "PRINCIPAL LEAD WORKING", "align": "center", "bold": true },
+    { "type": "text", "value": "Av. Principal S/N - Rupa Rupa", "align": "center" },
+    { "type": "separator", "style": "solid" },
+    { "type": "block", "value": "FACTURA ELECTRONICA", "align": "center" },
+    { "type": "text", "value": "001-00009241", "align": "center", "bold": true },
+    { "type": "separator", "style": "dash" },
+    { "type": "text", "value": "Fecha: 05/01/2026", "align": "left" },
+    { "type": "text", "value": "Cliente: DAMIAN PEREZ JONATHAN", "align": "left" },
+    { "type": "text", "value": "RUC: 10753276209", "align": "left" },
+    { "type": "text", "value": "Dirección: HABIDO", "align": "left" },
+    { "type": "separator", "style": "dash" },
     {
       "type": "row",
       "cols": [
-        { "value": "CNT", "align": "left", "width": 0.15 },
-        { "value": "DESCRIPCION", "align": "left", "width": 0.55 },
-        { "value": "P.UNIT", "align": "right", "width": 0.30 }
+        { "value": "CNT", "align": "left", "width": 2 },
+        { "value": "DESCRIPCION", "align": "left", "width": 7 },
+        { "value": "P.UNIT", "align": "right", "width": 3 }
       ]
     },
     {
       "type": "row",
       "cols": [
-        { "value": "1", "align": "left", "width": 0.15 },
-        { "value": "INCA 3LT.", "align": "left", "width": 0.55 },
-        { "value": "15.00", "align": "right", "width": 0.30 }
+        { "value": "1", "align": "left", "width": 2 },
+        { "value": "INCA 3LT.", "align": "left", "width": 7 },
+        { "value": "15.00", "align": "right", "width": 3 }
       ]
     },
-    {
-      "type": "separator",
-      "style": "solid"
-    },
+    { "type": "separator", "style": "solid" },
     {
       "type": "row",
       "cols": [
-        { "value": "OP. GRAVADA:", "align": "right", "width": 0.6 },
-        { "value": "S/ 15.00", "align": "right", "width": 0.4 }
+        { "value": "OP. GRAVADA:", "align": "right", "width": 7 },
+        { "value": "S/ 15.00", "align": "right", "width": 5 }
       ]
     },
     {
       "type": "row",
       "cols": [
-        { "value": "I.G.V. (18%):", "align": "right", "width": 0.6 },
-        { "value": "S/ 2.70", "align": "right", "width": 0.4 }
+        { "value": "I.G.V. (18%):", "align": "right", "width": 7 },
+        { "value": "S/ 2.70", "align": "right", "width": 5 }
       ]
     },
     {
       "type": "row",
       "cols": [
-        { "value": "IMPORTE TOTAL:", "align": "right", "width": 0.6, "bold": true },
-        { "value": "S/ 17.70", "align": "right", "width": 0.4, "bold": true }
+        { "value": "IMPORTE TOTAL:", "align": "right", "width": 7, "bold": true },
+        { "value": "S/ 17.70", "align": "right", "width": 5, "bold": true }
       ]
     },
-    {
-      "type": "text",
-      "value": "Son: DIECISIETE CON 70/100 SOLES",
-      "align": "left",
-      "fontType": "fontB"
-    },
-    {
-      "type": "qr",
-      "value": "20000000001|01|001|00009241|2.70|17.70|05/01/2026|6|10753276209|",
-      "width": 4
-    },
-    {
-      "type": "text",
-      "value": "Representación impresa de la FE",
-      "align": "center",
-      "fontType": "fontB"
-    },
-    {
-      "type": "cut"
-    }
+    { "type": "text", "value": "Son: DIECISIETE CON 70/100 SOLES", "align": "left", "fontType": "fontB" },
+    { "type": "qr", "value": "20000000001|01|001|00009241|2.70|17.70|05/01/2026|6|10753276209|", "width": 4 },
+    { "type": "text", "value": "Representación impresa de la FE", "align": "center", "fontType": "fontB" },
+    { "type": "cut" }
   ]
 }

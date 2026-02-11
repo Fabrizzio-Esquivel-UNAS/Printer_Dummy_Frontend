@@ -1,89 +1,41 @@
-
-{
-  "action": "customizedPrint",
+﻿{
   "printer": "",
   "paperSize": "80mm",
   "commands": [
-    {
-      "type": "text",
-      "value": "PRINCIPAL LEAD WORKING",
-      "align": "center",
-      "bold": true
-    },
-    {
-      "type": "block",
-      "value": "BOLETA DE VENTA",
-      "align": "center"
-    },
-    {
-      "type": "text",
-      "value": "SERIE: P01-00000746",
-      "align": "center",
-      "bold": true
-    },
-    {
-      "type": "separator",
-      "style": "dash"
-    },
-    {
-      "type": "text",
-      "value": "Fecha: 05/01/2026",
-      "align": "left"
-    },
-    {
-      "type": "text",
-      "value": "Cliente: JONATHAN DAMIAN PEREZ",
-      "align": "left"
-    },
-    {
-      "type": "text",
-      "value": "DNI: 75327620",
-      "align": "left"
-    },
-    {
-      "type": "separator",
-      "style": "dash"
-    },
+    { "type": "text", "value": "PRINCIPAL LEAD WORKING", "align": "center", "bold": true },
+    { "type": "block", "value": "BOLETA DE VENTA", "align": "center" },
+    { "type": "text", "value": "SERIE: P01-00000746", "align": "center", "bold": true },
+    { "type": "separator", "style": "dash" },
+    { "type": "text", "value": "Fecha: 05/01/2026", "align": "left" },
+    { "type": "text", "value": "Cliente: JONATHAN DAMIAN PEREZ", "align": "left" },
+    { "type": "text", "value": "DNI: 75327620", "align": "left" },
+    { "type": "separator", "style": "dash" },
     {
       "type": "row",
       "cols": [
-        { "value": "CANT", "align": "left", "width": 0.2 },
-        { "value": "DESCRIPCION", "align": "left", "width": 0.5 },
-        { "value": "IMPORTE", "align": "right", "width": 0.3 }
+        { "value": "CANT", "align": "left", "width": 2 },
+        { "value": "DESCRIPCION", "align": "left", "width": 6 },
+        { "value": "IMPORTE", "align": "right", "width": 4 }
       ]
     },
     {
       "type": "row",
       "cols": [
-        { "value": "1", "align": "left", "width": 0.2 },
-        { "value": "PRODUCTO UNIDAD", "align": "left", "width": 0.5 },
-        { "value": "8.00", "align": "right", "width": 0.3 }
+        { "value": "1", "align": "left", "width": 2 },
+        { "value": "PRODUCTO UNIDAD", "align": "left", "width": 6 },
+        { "value": "8.00", "align": "right", "width": 4 }
       ]
     },
-    {
-      "type": "separator",
-      "style": "solid"
-    },
+    { "type": "separator", "style": "solid" },
     {
       "type": "row",
       "cols": [
-        { "value": "TOTAL A PAGAR:", "align": "right", "width": 0.6 },
-        { "value": "S/ 8.00", "align": "right", "width": 0.4, "bold": true }
+        { "value": "TOTAL A PAGAR:", "align": "right", "width": 7 },
+        { "value": "S/ 8.00", "align": "right", "width": 5, "bold": true }
       ]
     },
-    {
-      "type": "text",
-      "value": "Cajero: RONALD LLERENA",
-      "align": "left",
-      "fontType": "fontB"
-    },
-    {
-      "type": "text",
-      "value": "Gracias por su preferencia",
-      "align": "center"
-    },
-    {
-      "type": "cut"
-    }
+    { "type": "text", "value": "Cajero: RONALD LLERENA", "align": "left", "fontType": "fontB" },
+    { "type": "text", "value": "Gracias por su preferencia", "align": "center" },
+    { "type": "cut" }
   ]
 }
