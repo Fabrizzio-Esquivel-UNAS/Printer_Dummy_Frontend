@@ -5,7 +5,8 @@ const REQUEST_FILES = {
     restaurant: 'Requests/dataOrderRestaurant.json',
     notaVenta: 'Requests/dataNotadeVenta.json',
     factura: 'Requests/dataFactura.json',
-    boleta: 'Requests/dataBoleta.json'
+    boleta: 'Requests/dataBoleta.json',
+    custom: 'Requests/dataCustom.json'
 };
 
 // API Configuration

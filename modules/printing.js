@@ -9,15 +9,16 @@ async function handleRequestTypeChange() {
     if (select.value === 'custom') {
         customContainer.classList.remove('hidden');
         if (!customText.value.trim()) {
-            customText.value = JSON.stringify({
-                "printer": "",
-                "paperSize": "80mm",
-                "commands": [
-                    { "type": "text", "value": "TICKET PERSONALIZADO", "align": "center", "bold": true, "width": 1, "height": 1 },
-                    { "type": "feed", "value": 1 },
-                    { "type": "cut" }
-                ]
-            }, null, 2);
+            try {
+                const itemPath = REQUEST_FILES['custom'];
+                const response = await fetch(itemPath);
+                if (response.ok) {
+                    const data = await response.json();
+                    customText.value = JSON.stringify(data, null, 2);
+                }
+            } catch (e) {
+                log("Error cargando plantilla personalizada por defecto", 'error');
+            }
         }
     } else {
         customContainer.classList.add('hidden');

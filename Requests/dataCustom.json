@@ -1,0 +1,61 @@
+{
+    "printer": "",
+    "paperSize": "80mm",
+    "commands": [
+        { "type": "text", "value": "TICKET PERSONALIZADO", "align": "center", "bold": true, "width": 2, "height": 2 },
+        { "type": "text", "value": "Demostración de Capacidades", "align": "center" },
+        { "type": "feed", "value": 1 },
+
+        { "type": "separator", "style": "solid" },
+        { "type": "block", "value": "ESTILOS DE TEXTO", "align": "center" },
+        { "type": "separator", "style": "solid" },
+        { "type": "text", "value": "Texto normal a la izquierda", "align": "left" },
+        { "type": "text", "value": "Texto en Negrita Centrado", "align": "center", "bold": true },
+        { "type": "text", "value": "Fuente B (Pequeña) Derecha", "align": "right", "fontType": "fontB" },
+        { "type": "text", "value": "TEXTO GRANDE", "align": "center", "width": 2, "height": 2 },
+
+        { "type": "feed", "value": 1 },
+        { "type": "separator", "style": "dash" },
+        { "type": "block", "value": "TABLAS Y FILAS (ROW)", "align": "center" },
+        { "type": "separator", "style": "dash" },
+        {
+            "type": "row",
+            "cols": [
+                { "value": "CANT", "align": "left", "width": 2 },
+                { "value": "DESCRIPCIÓN", "align": "left", "width": 7 },
+                { "value": "TOTAL", "align": "right", "width": 3 }
+            ]
+        },
+        {
+            "type": "row",
+            "cols": [
+                { "value": "2.0", "align": "left", "width": 2 },
+                { "value": "Producto demo A", "align": "left", "width": 7 },
+                { "value": "100.00", "align": "right", "width": 3 }
+            ]
+        },
+        {
+            "type": "row",
+            "cols": [
+                { "value": "1.0", "align": "left", "width": 2 },
+                { "value": "Servicio premium", "align": "left", "width": 7 },
+                { "value": "50.00", "align": "right", "width": 3 }
+            ]
+        },
+
+        { "type": "feed", "value": 1 },
+        { "type": "separator", "style": "solid" },
+        { "type": "block", "value": "CÓDIGOS (QR / BARCODE)", "align": "center" },
+        { "type": "separator", "style": "solid" },
+        { "type": "text", "value": "Código QR:", "align": "center" },
+        { "type": "qr", "value": "https://github.com/Fabrizzio-Dev", "width": 6 },
+        { "type": "feed", "value": 1 },
+        { "type": "text", "value": "Código de Barras (EAN13):", "align": "center" },
+        { "type": "barcode", "value": "7751234567890", "style": "ean13" },
+
+        { "type": "feed", "value": 2 },
+        { "type": "text", "value": "GRACIAS POR SU PRUEBA", "align": "center", "bold": true },
+        { "type": "feed", "value": 1 },
+        { "type": "cut" }
+    ]
+}
